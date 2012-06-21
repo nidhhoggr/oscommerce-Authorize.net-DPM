@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+	<TITLE>Authorize Net AIM</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 1.1.4  (Win32)">
+	<META NAME="CREATED" CONTENT="20061212;6382388">
+	<META NAME="CHANGEDBY" CONTENT="Joel Aemmer">
+	<META NAME="CHANGED" CONTENT="20061212;6405241">
+	<META NAME="ProgId" CONTENT="FrontPage.Editor.Document">
+	<META HTTP-EQUIV="Content-Language" CONTENT="en-gb">
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<center><h1>Authorize Net DPM (Direct Payment Method)
+Install Guide</h1></center>
+This is tested as of June 20, 2012 on both osCommerce Online Merchant v2.2 Release Candidate 2a and the latest version of Authorize.net as seen at: http://developer.authorize.net/api/dpm/<br>
+<br>
+The first thing to say is that this is not the Standard AuthorizeNet payment module.&nbsp;
+<br>
+<U><B>New Files</B></U>
+<br>
+catalog/includes/modules/payment/authorizenet_dpm.php<br>
+catalog/includes/languages/english/modules/payment/authorizenet_dpm.php<br>
+catalog/cvv_help.php<br>
+catalog/includes/languages/english/cvv_help.php<br>
+catalog/images/cvv_help1.jpg<br>
+catalog/images/cvv_help2.jpg
+
+<br><br>
+
+<u><b>Run this SQL query on your store's database:</b></u><br>
+<pre>ALTER TABLE `orders` ADD `transaction_details` TEXT NULL AFTER `cc_expires`;</pre>
+
+
+<U><B>Edits You Need To Make</B></U><br><br>
+in catalog/includes/filenames.php add this line before the closing ?&gt;:<br>
+<pre>define('FILENAME_POPUP_CVV_HELP', 'cvv_help.php');</pre><br><br>
+
+<b>In catalog/checkout_process.php (line 49) CUT OUT the two lines:</b><br>
+---------------------------
+<pre>
+// load the before_process function from the payment
+modules
+  $payment_modules-&gt;before_process();
+</pre>
+-------------------------------<BR><BR>
+
+<b>and paste them BELOW (line 55)</b><br>
+--------------------------------
+<pre>
+  $order_totals = $order_total_modules-&gt;process();
+</pre>
+---------------------------------
+<BR><BR>
+
+<b>so it should look like:</b><br>
+---------------------------
+<pre>
+  require(DIR_WS_CLASSES . 'order_total.php');
+  $order_total_modules = new order_total;
+
+  $order_totals = $order_total_modules-&gt;process();
+  
+
+// load the before_process function from the payment
+modules
+  $payment_modules-&gt;before_process();
+</pre>  
+<p>-----------------------------
+  <BR>
+  <BR>
+  <b>In catalog/admin/orders.php, find these lines:</b>
+  <BR>
+  <textarea name="textarea" style="width:100%;height:80px">
+          <tr>
+            <td class="main"><?php echo ENTRY_CREDIT_CARD_EXPIRES; ?></td>
+            <td class="main"><?php echo $order->info['cc_expires']; ?></td>
+          </tr>
+<?php
+    }
+</textarea>
+<br><br>
+<b>And change them to:</b><br>
+<textarea style="width:100%;height:80px">
+          <tr>
+            <td class="main"><?php echo ENTRY_CREDIT_CARD_EXPIRES; ?>
+            <td class="main"><?php echo $order->info['cc_expires']; ?></td>
+          
+<?php
+    }
+    $detail_query = tep_db_query("SELECT transaction_details FROM " . TABLE_ORDERS . " WHERE orders_id = " . (int)$_GET['oID'] . " LIMIT 1");
+    $detail = tep_db_fetch_array($detail_query);
+
+    if ($detail['transaction_details'] != '') {
+      $details = explode(';', $detail['transaction_details']);
+
+      foreach ($details as $d) {
+        $item = explode('|', $d);
+?>
+          <tr>
+            <td class="main"><?php echo $item[0]; ?>:</td>
+            <td class="main"><?php echo $item[1]; ?></td>
+          </tr>
+<?php
+      }
+    }
+?>
+  </textarea>
+  <BR>
+  <BR>
+
+That's all there is to installing the files<br>
+<br>
+&nbsp;
+<U><B>Set Up</B></U><br>
+Once you've installed the new files and applied the edits to two other files go to your osCommerce
+'admin' panel, go to Modules --&gt; Payment, click
+once on the Authorize
+Net AIM link, and then click to Install.<br>
+<br>
+When you've done that,
+click on 'Edit' and set up as follows:<br>
+1.&nbsp; <B>Enable
+Authorize.net AIM Module</B> - Set to 'True'<br>
+2.&nbsp; <B>Login User
+Name</B> as provided to you by AuthorizeNet<br>
+3.&nbsp; <B>The
+Transaction Key</B> provided to you by AuthorizeNet,
+which you can also
+re-generate (create new) in your
+AuthorizeNet control
+panel.<br>
+4.&nbsp; <B>Transaction
+Mode </B>is initially Test.&nbsp; The module will
+automatically switch
+the type of data it sends, but not the
+url it connects to when you
+change this setting to Live
+&nbsp;- but your AuthorizeNet
+account also has to be switched to Live mode.<br>
+5.&nbsp; <B>Authorization
+Type</B> - recommended setting is
+Authorize/Capture<br>
+6.&nbsp; <B>Customer
+Notifications</B> - recommended setting
+is False.&nbsp; If all
+works properly they will already receive
+an Order Confirmation
+from your website.<br>
+7.&nbsp; <B>Merchant
+Notifications</B> - recommended setting
+is True.&nbsp; If all
+works properly you'll get a copy of the
+Order Confirmation
+email and this confirmation.&nbsp; If
+all does not work
+properly at least you should get this
+confirmation of what
+was ordered and by whom!<br />8.&nbsp; <B>Request CVV Number</B> -
+  recommended setting is True<br>
+  9.&nbsp; <B>Sort Order
+    Of Display</B> - set to zero to make this module
+  appear above other
+  payment modules.<br>
+  10. <B>Payment Zone</B>
+  - if you enable this then only payments
+  within the selected
+  zone will be approved.<br>
+  11. <B>Set Order Status</B>
+  - leave set to Default or set to
+  an order status of your
+  choice.<br>
+  12. <B>CURL Proxy IP Address</B> -
+  If your provider requires the use of a CURL proxy, enter the full URL
+  here, otherwise leave it set to none.<br>
+  13.&nbsp; Click <B>Update</B>
+  and you're done installing here.<br>
+  <br>
+  
+</p>
+<center><U><B>Additional Info</B></U></center>
+<p>  Please refer to the documentation provided to you by AuthorizeNet on how to set up your
+account interface with them.&nbsp; It cannot be covered here.<br>
+<br>
+Run adequate testing
+<B>before</B> you put your account <B>Live</B> with AuthorizeNet.<br>
+<br>
+If you have used
+previous versions of Authorize Net AIM on osCommerce you will notice
+some differences:<br>
+<br>
+(a).&nbsp; The cvv
+popup now works.<br>
+<br>
+(b).&nbsp; There is no
+entry to store information in the database.  
+People were
+confused by the instruction to add a table to the database, which was
+unnecessary as much of
+the data is already stored there in the 'orders' table.&nbsp; We considered providing an additional .sql file which people could use
+to set up an extra
+table to capture response codes etc. but decided against it.&nbsp;
+Many osCommerce Users do not know how to set up an
+additional sql table
+and find altering the database intimidating.<br>
+<br>
+(c).&nbsp; There is no
+entry to store credit card details in the database.&nbsp; This was
+completely unnecessary as the card details are stored in the 'orders'
+table.
+The card details are
+stored unencrypted, so please make sure that your site is secure - <B>YOU ARE RESPONSIBLE</B> for the security of that information!<br>
+<br>
+(d)&nbsp; If you have
+an existing Authorize Net account and have been using it in <B>SIM</B>
+mode then don't forget to reset it to <B>AIM (3.1)</B> mode.&nbsp;
+Set the below as
+follows:<br>
+<br>
+i.&nbsp;&nbsp;
+Delimited Response = No<br>
+ii.&nbsp; Default Field
+Seperator = comma<br>
+iii. Field
+Encapsulation Character = blank<br>
+<br>
+(e)&nbsp; If you have
+problems establishing a connection to Authorize Net whilst running in
+Test mode then, on line 301 of
+catalog/includes/modules/authorizenet_aim.php,
+change the url to the
+following: $url =
+'https://certification.authorize.net/gateway/transact.dll';</p>
+<p>(f) The error for &quot;<em>Your credit card</em> could not be authorized for this <em>reason</em>&quot; has been fixed.<br>
+  <br>
+  <B>This
+    Contribution is provided on an 'as is' basis.&nbsp; We make no
+    guarantee that it will work on your website, and accept no
+    responsibility if you decide</B> <B>to
+      install it on your website.</B> Most of the credit for
+  this module goes to the original osCommerce Team who wrote the
+  Authorize Net payment module, which was then adapted for
+  the Authorize Net AIM
+service by Jason LeBaron.&nbsp;Other credit goes to dynamoeffects who updated this until 2008 and Vger who wrote the addon originally in 2006. </p>
+<p>  <strong>Support Thread:</strong><br>
+  http://forums.oscommerce.com/index.php?showtopic=199381 </p>
+</BODY>
+</HTML>

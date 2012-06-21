@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=big5">
+<title>Error message</title>
+<style>
+<!--
+ p.MsoNormal
+	{mso-style-parent:"";
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	margin-left:0in; margin-right:0in; margin-top:0in}
+-->
+</style>
+</head>
+
+<body>
+　<table border="1" width="100%" id="table2" cellspacing="0" cellpadding="2">
+	<tr>
+		<td><b><font size="2" face="Tahoma" color="#FF0000">Error message</font></b></td>
+	</tr>
+	<tr>
+		<td>
+		<p class="MsoNormal"><b><span style="font-family: Tahoma; color: black">
+		<font size="2">(TESTMODE) The merchant login ID or password is invalid 
+		or the account is inactive. - Your credit card could not be authorized 
+		for this reason. Please correct any information and try again or contact 
+		us for further assistance.</font></span></b></td>
+	</tr>
+</table>
+<font face="Tahoma">
+<br>　</font><table border="1" width="100%" id="table1" cellpadding="2" cellspacing="0">
+	<tr>
+		<td><b><font size="2" face="Tahoma">Look For: (This should be fixed if 
+		you use emailmaomao's package)</font></b></td>
+	</tr>
+	<tr>
+		<td><font size="2" face="Tahoma">$url = 'https://secure.authorize.net/gateway/transact.dll'; // If 
+		this does not work then change 'secure' to 'certification' on this line</font></td>
+	</tr>
+	<tr>
+		<td><b><font size="2" face="Tahoma">Replace with:</font></b></td>
+	</tr>
+	<tr>
+		<td><font size="2" face="Tahoma">$url = 'https://test.authorize.net/gateway/transact.dll'; // If this 
+		does not work then change 'secure' to 'certification' on this line</font></td>
+	</tr>
+	<tr>
+		<td><b><font size="2" face="Tahoma">Should Look Like:</font></b></td>
+	</tr>
+	<tr>
+		<td><font size="2" face="Tahoma">unset($response);<br>
+		<br>
+		if (MODULE_PAYMENT_AUTHORIZENET_AIM_TESTMODE == 'Test') {<br>
+		$url = 'https://test.authorize.net/gateway/transact.dll'; // If this 
+		does not work then change 'secure' to 'certification' on this line</font></td>
+	</tr>
+</table>
+
+<font face="Tahoma">
+
+<br>
+</font>
+<p><font size="6" face="Tahoma">Tips</font></p>
+<font face="Tahoma">
+<br>
+</font>
+<table border="1" width="100%" id="table3" cellspacing="0" cellpadding="2">
+	<tr>
+		<td><b><font size="2" face="Tahoma" color="#FF0000">Error message</font></b></td>
+	</tr>
+	<tr>
+		<td>
+		<p class="MsoNormal"><b><span style="font-family: Tahoma; color: black">
+		<font size="2">(TESTMODE) This account has not been given the permission(s) required for this request. </font></span></b></td>
+	</tr>
+</table>
+<p><font face="Tahoma">Make sure you turn the test mode on: (Go to 
+<a target="_blank" href="https://test.authorize.net">https://test.authorize.net</a>)</font></p>
+<p><u><font face="Tahoma">Account =&gt; Settings =&gt; Security Settings =&gt; General Security Settings =&gt; Test 
+Mode</font></u></p>
+<hr>
+　<table border="1" width="100%" id="table4" cellspacing="0" cellpadding="2">
+	<tr>
+		<td><b><font face="Tahoma">Login Username: </font>
+		<span style="font-size: 9pt; font-family: Tahoma">API Login ID</span></b></td>
+	</tr>
+	<tr>
+		<td><span class="pageheaderfont"><b>
+		<span style="font-size: 9pt; font-family: Tahoma">Transaction Key</span></b><span style="font-size: 9pt; font-family: Tahoma">:</span><b><font face="Tahoma"><span style="font-size: 9pt">Transaction</span></font><font face="Tahoma"><span style="font-size: 9pt"> 
+		Key</span></font></b><span style="font-size: 9pt; font-family: Tahoma"> 
+		(16 Digits)</span></span></td>
+	</tr>
+</table>
+<p><span class="pageheaderfont">
+<span style="font-family: Tahoma; font-size: 9pt">See also:
+<a href="http://help.godaddy.com/topic/269/article/1656">
+http://help.godaddy.com/topic/269/article/1656</a> (</span></span><font face="Tahoma">Why 
+am I getting a permissions error message from Authorize.Net?)</font></p>
+</body>
+
+</html>

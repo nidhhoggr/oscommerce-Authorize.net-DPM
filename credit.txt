@@ -1,0 +1,1 @@
+This addon comes courtesy of Search Engine Partner. This update addresses the "Your credit card could not be authorized for this reason" error message in the address bar.
